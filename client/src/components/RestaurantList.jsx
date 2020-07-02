@@ -1,6 +1,19 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import RestaurantFinder from "../api/RestaurantFinder";
 
-function RestaurantList() {
+const RestaurantList = () => {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await RestaurantFinder.get("/");
+        console.log(response);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
     <div className="list-group">
       <table className="table table-hover table-dark">
@@ -43,6 +56,6 @@ function RestaurantList() {
       </table>
     </div>
   );
-}
+};
 
 export default RestaurantList;
