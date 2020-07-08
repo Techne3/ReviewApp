@@ -17,7 +17,7 @@ function AddRestaurant() {
         price_range: priceRange,
       });
       console.log(response);
-      addRestaurant(response.data.data);
+      addRestaurant(response.data.data.restaurant);
     } catch (err) {}
   };
   return (
