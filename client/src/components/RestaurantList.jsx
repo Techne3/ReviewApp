@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import RestaurantFinder from "../api/RestaurantFinder";
+import { RestaurantContext } from "../context/RestaurantContext";
 
 const RestaurantList = () => {
+  const { restaurants, setRestaurants } = useContext(RestaurantContext);
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await RestaurantFinder.get("/");
         console.log(response);
+        setRestaurants(response.data.data.restaurants);
       } catch (err) {
         console.log(err);
       }
@@ -28,7 +31,24 @@ const RestaurantList = () => {
           </tr>
         </thead>
         <tbody>
-          <tr>
+          {restaurants.map((item) => {
+            return (
+              <tr>
+                <td>{item.name}</td>
+                <td>{item.location}</td>
+                <td>{"$".repeat(item.price_range)}</td>
+                <td>reviews</td>
+                <td>
+                  <button className="btn btn-warning">Update</button>
+                </td>
+                <td>
+                  <button className="btn btn-danger">Delete</button>
+                </td>
+              </tr>
+            );
+          })}
+
+          {/* <tr>
             <td>Chipotle</td>
             <td>Denver</td>
             <td>$$</td>
@@ -51,7 +71,7 @@ const RestaurantList = () => {
             <td>
               <button className="btn btn-danger">Delete</button>
             </td>
-          </tr>
+          </tr> */}
         </tbody>
       </table>
     </div>
