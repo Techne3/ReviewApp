@@ -31,22 +31,23 @@ const RestaurantList = () => {
           </tr>
         </thead>
         <tbody>
-          {restaurants.map((item) => {
-            return (
-              <tr>
-                <td>{item.name}</td>
-                <td>{item.location}</td>
-                <td>{"$".repeat(item.price_range)}</td>
-                <td>reviews</td>
-                <td>
-                  <button className="btn btn-warning">Update</button>
-                </td>
-                <td>
-                  <button className="btn btn-danger">Delete</button>
-                </td>
-              </tr>
-            );
-          })}
+          {restaurants &&
+            restaurants.map((item) => {
+              return (
+                <tr key={item.id}>
+                  <td>{item.name}</td>
+                  <td>{item.location}</td>
+                  <td>{"$".repeat(item.price_range)}</td>
+                  <td>reviews</td>
+                  <td>
+                    <button className="btn btn-warning">Update</button>
+                  </td>
+                  <td>
+                    <button className="btn btn-danger">Delete</button>
+                  </td>
+                </tr>
+              );
+            })}
 
           {/* <tr>
             <td>Chipotle</td>
