@@ -105,7 +105,7 @@ app.delete("/api/v1/restaurants/:id", async (req, res) => {
   }
 });
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5001;
 app.listen(port, () => {
   console.log(`server is up on ${port}!`);
 });

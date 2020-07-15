@@ -3,7 +3,7 @@ import RestaurantFinder from "../api/RestaurantFinder";
 import { RestaurantContext } from "../context/RestaurantContext";
 
 function AddRestaurant() {
-  const { addRestaurant } = useContext(RestaurantContext);
+  const { addRestaurants } = useContext(RestaurantContext);
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
   const [priceRange, setPriceRange] = useState("Price Range");
@@ -12,13 +12,15 @@ function AddRestaurant() {
     e.preventDefault();
     try {
       const response = await RestaurantFinder.post("/", {
-        name: name,
-        location: location,
+        name,
+        location,
         price_range: priceRange,
       });
-      console.log(response);
-      addRestaurant(response.data.data.restaurant);
-    } catch (err) {}
+      console.log(response.data.data);
+      addRestaurants(response.data.data.restaurant);
+    } catch (err) {
+      console.log(err);
+    }
   };
   return (
     <div className="mb-4">
