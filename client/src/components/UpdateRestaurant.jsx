@@ -1,6 +1,7 @@
-import React, { useState, useContext } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useContext, useEffect } from "react";
+import { useParams, useHistory } from "react-router-dom";
 import { RestaurantContext } from "../context/RestaurantContext";
+import RestaurantFinder from "../api/RestaurantFinder";
 
 function UpdateRestaurant() {
   const { id } = useParams();
@@ -8,10 +9,32 @@ function UpdateRestaurant() {
   const [location, setLocation] = useState("");
   const [priceRange, setPriceRange] = useState("");
 
-  const { restaurants } = useContext();
+  let history = useHistory();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await RestaurantFinder.get(`/${id}`);
+      console.log(response.data.data);
+      setName(response.data.data.restaurant.name);
+      setLocation(response.data.data.restaurant.location);
+      setPriceRange(response.data.data.restaurant.price_range);
+    };
+    fetchData();
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const updatedRestaurant = await RestaurantFinder.put(`/${id}`, {
+      name,
+      location,
+      price_range: priceRange,
+    });
+    // console.log(updatedRestaurant);
+    history.push("/");
+  };
+
   return (
     <div>
-      <h1>restaurants[0].name</h1>
       <form action="">
         <div className="form-group">
           <label htmlFor="name">Name</label>
@@ -43,7 +66,9 @@ function UpdateRestaurant() {
             type="number"
           />
         </div>
-        <button className="btn btn-primary">Submit</button>
+        <button onClick={(e) => handleSubmit(e)} className="btn btn-primary">
+          Submit
+        </button>
       </form>
     </div>
   );
