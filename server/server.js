@@ -1,26 +1,28 @@
 require("dotenv").config();
 const express = require("express");
-const morgan = require("morgan");
-const db = require("./db");
 const cors = require("cors");
+const db = require("./db");
+
+const morgan = require("morgan");
 
 const app = express();
 
-// middleware
 app.use(cors());
-app.use(morgan("dev"));
 app.use(express.json());
 
-// get all restaurants
+// Get all Restaurants
 app.get("/api/v1/restaurants", async (req, res) => {
   try {
-    const results = await db.query("select * from restaurants");
-    // console.log(results);
+    //const results = await db.query("select * from restaurants");
+    const restaurantRatingsData = await db.query(
+      "select * from restaurants left join (select restaurant_id, COUNT(*), TRUNC(AVG(rating),1) as average_rating from reviews group by restaurant_id) reviews on restaurants.id = reviews.restaurant_id;"
+    );
+
     res.status(200).json({
       status: "success",
-      results: results.rows.length,
+      results: restaurantRatingsData.rows.length,
       data: {
-        restaurants: results.rows,
+        restaurants: restaurantRatingsData.rows,
       },
     });
   } catch (err) {
@@ -28,19 +30,28 @@ app.get("/api/v1/restaurants", async (req, res) => {
   }
 });
 
-// Get a Restaurant
+//Get a Restaurant
 app.get("/api/v1/restaurants/:id", async (req, res) => {
   console.log(req.params.id);
 
   try {
-    const results = await db.query("select * from restaurants where id =$1", [
-      req.params.id,
-      // select * from restaurants where id = req.params.id
-    ]);
+    const restaurant = await db.query(
+      "select * from restaurants left join (select restaurant_id, COUNT(*), TRUNC(AVG(rating),1) as average_rating from reviews group by restaurant_id) reviews on restaurants.id = reviews.restaurant_id where id = $1",
+      [req.params.id]
+    );
+    // select * from restaurants wehre id = req.params.id
+
+    const reviews = await db.query(
+      "select * from reviews where restaurant_id = $1",
+      [req.params.id]
+    );
+    console.log(reviews);
+
     res.status(200).json({
       status: "success",
       data: {
-        restaurant: results.rows[0],
+        restaurant: restaurant.rows[0],
+        reviews: reviews.rows,
       },
     });
   } catch (err) {
@@ -49,8 +60,9 @@ app.get("/api/v1/restaurants/:id", async (req, res) => {
 });
 
 // Create a Restaurant
+
 app.post("/api/v1/restaurants", async (req, res) => {
-  //   console.log(req.body);
+  console.log(req.body);
 
   try {
     const results = await db.query(
@@ -69,7 +81,8 @@ app.post("/api/v1/restaurants", async (req, res) => {
   }
 });
 
-// update
+// Update Restaurants
+
 app.put("/api/v1/restaurants/:id", async (req, res) => {
   try {
     const results = await db.query(
@@ -78,16 +91,16 @@ app.put("/api/v1/restaurants/:id", async (req, res) => {
     );
 
     res.status(200).json({
-      status: "success",
+      status: "succes",
       data: {
-        restaurant: results.rows[0],
+        retaurant: results.rows[0],
       },
     });
   } catch (err) {
     console.log(err);
   }
-  //   console.log(req.params.id);
-  //   console.log(req.body);
+  console.log(req.params.id);
+  console.log(req.body);
 });
 
 // Delete Restaurant
@@ -98,7 +111,25 @@ app.delete("/api/v1/restaurants/:id", async (req, res) => {
       req.params.id,
     ]);
     res.status(204).json({
+      status: "sucess",
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+app.post("/api/v1/restaurants/:id/addReview", async (req, res) => {
+  try {
+    const newReview = await db.query(
+      "INSERT INTO reviews (restaurant_id, name, review, rating) values ($1, $2, $3, $4) returning *;",
+      [req.params.id, req.body.name, req.body.review, req.body.rating]
+    );
+    console.log(newReview);
+    res.status(201).json({
       status: "success",
+      data: {
+        review: newReview.rows[0],
+      },
     });
   } catch (err) {
     console.log(err);
