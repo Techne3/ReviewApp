@@ -172,4 +172,4 @@ app.listen(port, () => {
 // );
 
 // INSERT INTO reviews( restaurant_id, name, review, rating)
-// values(8, 'jon', 'not yummy', 2);
+// values(8, 'jonny', 'not yummy', 2);
