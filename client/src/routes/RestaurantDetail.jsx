@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import { RestaurantContext } from "../context/RestaurantContext";
 import RestaurantFinder from "../api/RestaurantFinder";
 import StarRating from "../components/StarRating";
+import Reviews from "../components/Reviews";
+import AllReview from "../components/AllReview";
 
 function RestaurantDetail() {
   const { id } = useParams();
@@ -24,7 +26,17 @@ function RestaurantDetail() {
 
   return (
     <div>
-      <h2> {selectedRestaurant && <StarRating rating={2.4} />}</h2>
+      <h4>
+        {" "}
+        {selectedRestaurant && (
+          <>
+            <div className="mt-3">
+              <Reviews />
+            </div>
+            <AllReview />
+          </>
+        )}{" "}
+      </h4>
     </div>
   );
 }
