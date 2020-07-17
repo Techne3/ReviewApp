@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import RestaurantFinder from "../api/RestaurantFinder";
 import { RestaurantContext } from "../context/RestaurantContext";
+import "../components/addRest.css";
 
 function AddRestaurant() {
   const { addRestaurants } = useContext(RestaurantContext);
@@ -48,7 +49,7 @@ function AddRestaurant() {
             <select
               value={priceRange}
               onChange={(e) => setPriceRange(e.target.value)}
-              className="custom-select my-1 mr-sm-2"
+              className="custom-select mr-1 mr-sm-2 "
             >
               <option disabled>Price Range</option>
               <option value="1">$</option>

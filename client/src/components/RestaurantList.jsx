@@ -1,21 +1,21 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import RestaurantFinder from "../api/RestaurantFinder";
 import { RestaurantContext } from "../context/RestaurantContext";
 import { useHistory } from "react-router-dom";
+import StarRating from "./StarRating";
 
-const RestaurantList = () => {
+const RestaurantList = (props) => {
   const { restaurants, setRestaurants } = useContext(RestaurantContext);
   let history = useHistory();
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await RestaurantFinder.get("/");
-        console.log(response);
+        console.log(response.data.data);
         setRestaurants(response.data.data.restaurants);
-      } catch (err) {
-        console.log(err);
-      }
+      } catch (err) {}
     };
+
     fetchData();
   }, []);
 
@@ -32,6 +32,7 @@ const RestaurantList = () => {
       console.log(err);
     }
   };
+
   const handleUpdate = (e, id) => {
     e.stopPropagation();
     history.push(`/restaurants/${id}/update`);
@@ -41,6 +42,17 @@ const RestaurantList = () => {
     history.push(`/restaurants/${id}`);
   };
 
+  const renderRating = (restaurant) => {
+    if (!restaurant.count) {
+      return <span className="text-warning">0 reviews</span>;
+    }
+    return (
+      <>
+        <StarRating rating={restaurant.average_rating} />
+        <span className="text-warning ml-1">({restaurant.count})</span>
+      </>
+    );
+  };
   return (
     <div className="list-group">
       <table className="table table-hover table-dark">
@@ -56,19 +68,19 @@ const RestaurantList = () => {
         </thead>
         <tbody>
           {restaurants &&
-            restaurants.map((item) => {
+            restaurants.map((restaurant) => {
               return (
                 <tr
-                  onClick={() => handleRestaurantSelect(item.id)}
-                  key={item.id}
+                  onClick={() => handleRestaurantSelect(restaurant.id)}
+                  key={restaurant.id}
                 >
-                  <td>{item.name}</td>
-                  <td>{item.location}</td>
-                  <td>{"$".repeat(item.price_range)}</td>
-                  <td>reviews</td>
+                  <td>{restaurant.name}</td>
+                  <td>{restaurant.location}</td>
+                  <td>{"$".repeat(restaurant.price_range)}</td>
+                  <td>{renderRating(restaurant)}</td>
                   <td>
                     <button
-                      onClick={(e) => handleUpdate(e, item.id)}
+                      onClick={(e) => handleUpdate(e, restaurant.id)}
                       className="btn btn-warning"
                     >
                       Update
@@ -76,7 +88,7 @@ const RestaurantList = () => {
                   </td>
                   <td>
                     <button
-                      onClick={(e) => handleDelete(e, item.id)}
+                      onClick={(e) => handleDelete(e, restaurant.id)}
                       className="btn btn-danger"
                     >
                       Delete
@@ -85,10 +97,9 @@ const RestaurantList = () => {
                 </tr>
               );
             })}
-
           {/* <tr>
-            <td>Chipotle</td>
-            <td>Denver</td>
+            <td>mcdonalds</td>
+            <td>New YOrk</td>
             <td>$$</td>
             <td>Rating</td>
             <td>
@@ -99,9 +110,9 @@ const RestaurantList = () => {
             </td>
           </tr>
           <tr>
-            <td>City-Wok</td>
-            <td>Denver</td>
-            <td>$$$</td>
+            <td>mcdonalds</td>
+            <td>New YOrk</td>
+            <td>$$</td>
             <td>Rating</td>
             <td>
               <button className="btn btn-warning">Update</button>
@@ -115,5 +126,4 @@ const RestaurantList = () => {
     </div>
   );
 };
-
 export default RestaurantList;
